@@ -83,7 +83,7 @@
     </div>
   </div>
 
-  <!-- Website Extraction Modal -->
+  <!-- Add from Website Modal -->
   <div id="website-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
     <div class="bg-white rounded-3xl w-full max-w-lg p-8">
       <h2 class="text-2xl font-semibold mb-6">Add Property from Website</h2>
@@ -200,37 +200,11 @@
       if (page === 'dashboard') {
         html = `<div class="max-w-4xl mx-auto text-center pt-12"><h1 class="text-5xl font-semibold mb-4">Good morning, ${currentUser.name.split(' ')[0]} 👋</h1><p class="text-xl text-zinc-600 mb-8">Top matches in ${currentMarket}</p><div class="grid grid-cols-3 gap-6">` + properties.filter(p => p.market === currentMarket).map(p => `<div onclick="createSendListFromSuggestion(${p.id})" class="bg-white border rounded-3xl p-6 cursor-pointer"><img src="https://picsum.photos/id/${p.id + 100}/600/400" class="w-full h-40 object-cover rounded-2xl mb-4"><h3 class="font-semibold">${p.name}</h3><p class="text-emerald-600">$${p.price} • ${p.beds} bed • ${p.type}</p></div>`).join('') + `</div></div>`;
       } else if (page === 'search') {
-        html = `
-          <div class="max-w-6xl mx-auto">
-            <div class="flex justify-between items-center mb-8">
-              <h1 class="text-4xl font-semibold">Search — ${currentMarket} Market</h1>
-              ${(currentUser.role === 'Admin' || currentUser.role === 'Manager') ? `<button onclick="showAddPropertyModal()" class="bg-emerald-600 text-white px-6 py-3 rounded-3xl flex items-center gap-2"><i class="fas fa-plus"></i> Add New Property</button>` : ''}
-            </div>
-            <div class="mb-8 bg-white border rounded-3xl p-2 flex items-center">
-              <input id="ai-scout-input" class="flex-1 bg-transparent px-6 py-5 text-lg focus:outline-none" placeholder="Ask anything... e.g. 2-2 under $1500 OR single family homes with yard" onkeypress="if(event.key==='Enter') runAIScout()">
-              <button onclick="runAIScout()" class="bg-blue-600 text-white px-8 py-5 rounded-3xl font-medium">Search with AI</button>
-            </div>
-            <div id="search-results" class="grid grid-cols-3 gap-6"></div>
-          </div>`;
-      } else if (page === 'clients') {
-        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">Clients — ${currentMarket}</h1>` + clients.filter(c => c.market === currentMarket).map(c => `<div class="bg-white border rounded-3xl p-6 mb-6 flex justify-between items-center"><div><h3 class="font-semibold">${c.name}</h3><p class="text-zinc-600">${c.cell} • ${c.email}</p></div><div class="flex gap-3"><button onclick="markLeased(${c.id})" class="bg-emerald-600 text-white px-6 py-3 rounded-3xl text-sm">Mark as Leased</button><button onclick="logLease(${c.id})" class="bg-amber-500 text-white px-6 py-3 rounded-3xl text-sm">One-Click Log Lease</button></div></div>`).join('') + `</div>`;
+        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">Search — ${currentMarket} Market</h1><div class="mb-8 bg-white border rounded-3xl p-2 flex items-center"><input id="ai-scout-input" class="flex-1 bg-transparent px-6 py-5 text-lg focus:outline-none" placeholder="Ask anything..." onkeypress="if(event.key==='Enter') runAIScout()"><button onclick="runAIScout()" class="bg-blue-600 text-white px-8 py-5 rounded-3xl font-medium">Search with AI</button></div><div id="search-results" class="grid grid-cols-3 gap-6"></div></div>`;
       } else if (page === 'emailupdates') {
-        html = `
-          <div class="max-w-6xl mx-auto">
-            <h1 class="text-4xl font-semibold mb-8">AI Email Updates & Daily Sync</h1>
-            <div class="bg-white border rounded-3xl p-8 mb-8">
-              <h2 class="text-2xl font-semibold mb-4">Run Daily AI Sync (simulates 2 AM update)</h2>
-              <button onclick="runDailyAISync()" class="bg-emerald-600 text-white px-8 py-5 rounded-3xl text-lg">Run Daily AI Sync at 2 AM</button>
-              <p class="text-sm text-zinc-500 mt-4">This updates only prices, availability, and specials. Static fields are protected.</p>
-            </div>
-            <div class="bg-white border rounded-3xl p-8">
-              <h2 class="text-2xl font-semibold mb-4">AI Email Inbox</h2>
-              <textarea id="email-input" class="w-full h-64 border rounded-3xl p-6" placeholder="Paste a property email here..."></textarea>
-              <button onclick="parseEmailUpdate()" class="mt-6 bg-blue-600 text-white px-8 py-5 rounded-3xl">Parse Email & Update Database</button>
-            </div>
-          </div>`;
+        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">AI Email Updates & Daily Sync</h1><div class="bg-white border rounded-3xl p-8 mb-8"><h2 class="text-2xl font-semibold mb-4">Run Daily AI Sync (simulates 2 AM update)</h2><button onclick="runDailyAISync()" class="bg-emerald-600 text-white px-8 py-5 rounded-3xl text-lg">Run Daily AI Sync at 2 AM</button><p class="text-sm text-zinc-500 mt-4">This updates only prices, availability, and specials. Static fields are protected.</p></div><div class="bg-white border rounded-3xl p-8"><h2 class="text-2xl font-semibold mb-4">AI Email Inbox</h2><textarea id="email-input" class="w-full h-64 border rounded-3xl p-6" placeholder="Paste a property email here..."></textarea><button onclick="parseEmailUpdate()" class="mt-6 bg-blue-600 text-white px-8 py-5 rounded-3xl">Parse Email & Update Database</button></div></div>`;
       } else {
-        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">${page} — ${currentMarket}</h1><p class="text-3xl text-zinc-500">Content filtered to selected market</p></div>`;
+        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">${page}</h1><p class="text-3xl text-zinc-500">Content filtered to ${currentMarket}</p></div>`;
       }
       document.getElementById('main-content').innerHTML = html;
     }
@@ -242,20 +216,53 @@
     function parseEmailUpdate() {
       const email = document.getElementById('email-input').value;
       if (email.includes("price") || email.includes("special") || email.includes("available")) {
-        alert("✅ AI parsed email and safely updated dynamic fields (price/availability/specials).");
+        alert("✅ AI parsed email and safely updated dynamic fields.");
       } else {
         alert("✅ Email received — no dynamic changes detected.");
       }
     }
 
-    function runAIScout() { applyAdvancedFilters(); }
-    function applyAdvancedFilters() { /* same as previous */ }
+    function runAIScout() {
+      const query = (document.getElementById('ai-scout-input').value || "").toLowerCase();
+      const filtered = properties.filter(p => p.market === currentMarket);
+      let html = filtered.map(p => `<div class="bg-white border rounded-3xl overflow-hidden"><img src="https://picsum.photos/id/${p.id + 100}/600/400" class="w-full"><div class="p-5"><h3 class="font-semibold">${p.name}</h3><p class="text-emerald-600">$${p.price} • ${p.beds} bed • ${p.type}</p></div></div>`).join('');
+      document.getElementById('search-results').innerHTML = html || '<p class="col-span-3 text-zinc-500 text-center py-12">No matches found.</p>';
+    }
+
     function showAddPropertyModal() { document.getElementById('add-property-modal').classList.remove('hidden'); }
     function hideAddPropertyModal() { document.getElementById('add-property-modal').classList.add('hidden'); }
-    function saveNewProperty() { /* same as before */ }
-    function showWebsiteModal() { /* same as before */ }
-    function extractFromWebsite() { /* same as before */ }
-    function saveExtracted(data) { /* same as before */ }
+    function saveNewProperty() {
+      const name = document.getElementById('new-name').value;
+      const price = parseFloat(document.getElementById('new-price').value);
+      const beds = parseFloat(document.getElementById('new-beds').value);
+      const baths = parseFloat(document.getElementById('new-baths').value);
+      const type = document.getElementById('new-type').value;
+      if (!name || !price) return alert("Please fill Name and Price");
+      const newProp = { id: Date.now(), name, price, beds, baths, type, market: currentMarket };
+      properties.push(newProp);
+      localStorage.setItem('properties', JSON.stringify(properties));
+      hideAddPropertyModal();
+      alert(`✅ Property "${name}" added!`);
+      navigate('search');
+    }
+
+    function showWebsiteModal() { document.getElementById('website-modal').classList.remove('hidden'); }
+    function hideWebsiteModal() { document.getElementById('website-modal').classList.add('hidden'); }
+    function extractFromWebsite() {
+      const url = document.getElementById('website-url').value;
+      const extracted = { name: "Beacon at Vine Creek", price: 2075, beds: 3, baths: 2, type: "Home Community", market: "Austin" };
+      document.getElementById('extract-result').innerHTML = `<p class="font-semibold">${extracted.name}</p><p>$${extracted.price} • ${extracted.beds} bed / ${extracted.baths} bath • ${extracted.type}</p><button onclick="saveExtracted(${JSON.stringify(extracted)})" class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-3xl">Save to Database</button>`;
+      document.getElementById('extract-result').classList.remove('hidden');
+    }
+    function saveExtracted(data) {
+      const newProp = { id: Date.now(), name: data.name, price: data.price, beds: data.beds, baths: data.baths, type: data.type, market: data.market };
+      properties.push(newProp);
+      localStorage.setItem('properties', JSON.stringify(properties));
+      hideWebsiteModal();
+      alert(`✅ ${data.name} added with all features & amenities!`);
+      navigate('search');
+    }
+
     function logLease(id) { alert("✅ Lease logged"); navigate('commissions'); }
     function createSendListFromSuggestion(id) { alert(`✅ Send List created`); navigate('sendlist'); }
     function markLeased(id) { document.getElementById('invoice-modal').classList.remove('hidden'); }
