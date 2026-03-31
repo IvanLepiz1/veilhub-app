@@ -57,25 +57,6 @@
     <div class="flex-1 overflow-auto p-8 bg-white text-zinc-900" id="main-content"></div>
   </div>
 
-  <!-- AI Email Updates Tab Content (auto-update + email parsing) -->
-  <div id="emailupdates-content" class="hidden">
-    <div class="max-w-6xl mx-auto">
-      <h1 class="text-4xl font-semibold mb-8">AI Email Updates & Daily Sync</h1>
-      <div class="bg-white border rounded-3xl p-8 mb-8">
-        <h2 class="text-2xl font-semibold mb-4">Run Daily AI Sync (simulates 2 AM update)</h2>
-        <button onclick="runDailyAISync()" class="bg-emerald-600 text-white px-8 py-5 rounded-3xl text-lg">Run Daily AI Sync at 2 AM</button>
-        <p class="text-sm text-zinc-500 mt-4">This updates only prices, availability, and specials. Static fields are protected.</p>
-      </div>
-      <div class="bg-white border rounded-3xl p-8">
-        <h2 class="text-2xl font-semibold mb-4">AI Email Inbox</h2>
-        <textarea id="email-input" class="w-full h-64 border rounded-3xl p-6" placeholder="Paste a property email here..."></textarea>
-        <button onclick="parseEmailUpdate()" class="mt-6 bg-blue-600 text-white px-8 py-5 rounded-3xl">Parse Email & Update Database</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- All other modals and features (Add from Website, Add New Property, Invoice, etc.) are included in the full file -->
-
   <script>
     let currentUser = null;
     let currentMarket = localStorage.getItem('currentMarket') || 'Austin';
@@ -84,11 +65,24 @@
       { id:2, name:"Beacon at Vine Creek", price:2075, beds:3, baths:2, type:"Home Community", market:"Austin" }
     ];
 
+    const markets = [
+      { name: "Austin", cities: ["Austin", "Buda", "Kyle", "San Marcos", "Round Rock", "Pflugerville", "Hutto", "Cedar Park", "Del Valle"] },
+      { name: "Houston", cities: ["Houston", "Katy", "Sugar Land", "The Woodlands"] },
+      { name: "San Antonio", cities: ["San Antonio", "New Braunfels"] },
+      { name: "Dallas", cities: ["Dallas", "Fort Worth", "Plano", "Irving"] }
+    ];
+
+    const teamMembers = [
+      {id:1, name:"Alex Rivera", role:"Admin"},
+      {id:2, name:"Sarah Chen", role:"Manager"},
+      {id:3, name:"Mike Torres", role:"Agent"},
+      {id:4, name:"Maria Lopez", role:"Invoice Administrator"}
+    ];
+
     function quickLogin(role) {
-      currentUser = role === "Admin" ? {name:"Alex Rivera",role:"Admin"} : 
-                    role === "Manager" ? {name:"Sarah Chen",role:"Manager"} : 
-                    role === "InvoiceAdmin" ? {name:"Maria Lopez",role:"InvoiceAdmin"} : 
-                    {name:"Mike Torres",role:"Agent"};
+      currentUser = role === "Admin" ? teamMembers[0] : 
+                    role === "Manager" ? teamMembers[1] : 
+                    role === "InvoiceAdmin" ? teamMembers[3] : teamMembers[2];
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
       document.getElementById('user-name').textContent = currentUser.name;
@@ -98,33 +92,51 @@
       navigate('dashboard');
     }
 
-    function populateMarketSelector() { /* same as before */ }
-    function changeMarket() { /* same as before */ }
+    function populateMarketSelector() {
+      const select = document.getElementById('market-select');
+      select.innerHTML = markets.map(m => `<option value="${m.name}" ${m.name === currentMarket ? 'selected' : ''}>${m.name}</option>`).join('');
+    }
+
+    function changeMarket() {
+      currentMarket = document.getElementById('market-select').value;
+      localStorage.setItem('currentMarket', currentMarket);
+      alert(`✅ Switched to ${currentMarket} Market`);
+      navigate('dashboard');
+    }
+
     function logout() { location.reload(); }
 
     function navigate(page) {
-      // ... full navigation logic with Search, Dashboard, etc. ...
-      if (page === 'emailupdates') {
-        document.getElementById('main-content').innerHTML = document.getElementById('emailupdates-content').innerHTML;
-      }
-      // ... other pages ...
-    }
-
-    function runDailyAISync() {
-      alert("✅ Daily AI Sync completed at 2 AM.\n\nUpdated prices, availability, and specials for all properties in " + currentMarket + ".\nStatic fields protected.");
-      // In real version this would update properties array automatically
-    }
-
-    function parseEmailUpdate() {
-      const email = document.getElementById('email-input').value;
-      if (email.includes("price drop") || email.includes("special")) {
-        alert("✅ AI parsed email and updated dynamic fields (price/availability/specials).\nStatic fields unchanged.");
+      let html = '';
+      if (page === 'dashboard') {
+        html = `<div class="max-w-4xl mx-auto text-center pt-12"><h1 class="text-5xl font-semibold mb-4">Good morning, ${currentUser.name.split(' ')[0]} 👋</h1><p class="text-xl text-zinc-600 mb-8">Top matches in ${currentMarket}</p><div class="grid grid-cols-3 gap-6">` + properties.filter(p => p.market === currentMarket).map(p => `<div onclick="createSendListFromSuggestion(${p.id})" class="bg-white border rounded-3xl p-6 cursor-pointer"><img src="https://picsum.photos/id/${p.id + 100}/600/400" class="w-full h-40 object-cover rounded-2xl mb-4"><h3 class="font-semibold">${p.name}</h3><p class="text-emerald-600">$${p.price} • ${p.beds} bed • ${p.type}</p></div>`).join('') + `</div></div>`;
+      } else if (page === 'search') {
+        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">Search — ${currentMarket} Market</h1><div class="mb-8 bg-white border rounded-3xl p-2 flex items-center"><input id="ai-scout-input" class="flex-1 bg-transparent px-6 py-5 text-lg focus:outline-none" placeholder="Ask anything..." onkeypress="if(event.key==='Enter') runAIScout()"><button onclick="runAIScout()" class="bg-blue-600 text-white px-8 py-5 rounded-3xl font-medium">Search with AI</button></div><div id="search-results" class="grid grid-cols-3 gap-6"></div></div>`;
       } else {
-        alert("✅ Email received but no dynamic changes detected.");
+        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">${page}</h1><p class="text-3xl text-zinc-500">Content filtered to ${currentMarket}</p></div>`;
       }
+      document.getElementById('main-content').innerHTML = html;
     }
 
-    // All other functions (add property, search, messages, etc.) are in the full file you save
+    function runAIScout() {
+      const query = (document.getElementById('ai-scout-input').value || "").toLowerCase();
+      const filtered = properties.filter(p => p.market === currentMarket);
+      let html = filtered.map(p => `<div class="bg-white border rounded-3xl overflow-hidden"><img src="https://picsum.photos/id/${p.id + 100}/600/400" class="w-full"><div class="p-5"><h3 class="font-semibold">${p.name}</h3><p class="text-emerald-600">$${p.price} • ${p.beds} bed • ${p.type}</p></div></div>`).join('');
+      document.getElementById('search-results').innerHTML = html || '<p class="col-span-3 text-zinc-500 text-center py-12">No matches found.</p>';
+    }
+
+    function createSendListFromSuggestion(id) {
+      alert(`✅ Send List created from suggestion #${id}`);
+      navigate('sendlist');
+    }
+
+    function logLease(id) { alert("✅ Lease logged"); navigate('commissions'); }
+    function markLeased(id) { document.getElementById('invoice-modal').classList.remove('hidden'); }
+    function hideInvoiceModal() { document.getElementById('invoice-modal').classList.add('hidden'); }
+    function generateInvoice() { hideInvoiceModal(); alert("✅ Invoice saved"); navigate('commissions'); }
+    function computeTotal() { document.getElementById('total-due').textContent = '$1,099'; }
+    function autoFillProperty() {}
+    function autoFillClient() {}
   </script>
 </body>
 </html>
