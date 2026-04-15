@@ -1,1 +1,196 @@
-Hello there 
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApartmentData • Locator Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .card { transition: all 0.2s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+    .nav-btn { position: relative; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen overflow-hidden">
+
+  <!-- Login Screen -->
+  <div id="login-screen" class="min-h-screen bg-zinc-950 flex items-center justify-center">
+    <div class="bg-zinc-900 p-12 rounded-3xl w-full max-w-lg text-center">
+      <div class="mb-12">
+        <div class="w-20 h-20 mx-auto bg-emerald-500 rounded-3xl flex items-center justify-center text-white text-4xl font-bold">A</div>
+        <h2 class="text-4xl font-semibold mt-6 tracking-tight">ApartmentData Portal</h2>
+        <p class="text-zinc-400 mt-3 text-lg">Sign in to continue</p>
+      </div>
+      <div class="space-y-4">
+        <button onclick="quickLogin('Admin')" class="w-full bg-emerald-500 hover:bg-emerald-600 py-6 rounded-3xl font-semibold text-xl">Log in as Admin</button>
+        <button onclick="quickLogin('Manager')" class="w-full bg-emerald-500 hover:bg-emerald-600 py-6 rounded-3xl font-semibold text-xl">Log in as Manager</button>
+        <button onclick="quickLogin('Agent')" class="w-full bg-emerald-500 hover:bg-emerald-600 py-6 rounded-3xl font-semibold text-xl">Log in as Agent</button>
+        <button onclick="quickLogin('InvoiceAdmin')" class="w-full bg-amber-500 hover:bg-amber-600 py-6 rounded-3xl font-semibold text-xl">Log in as Invoice Administrator</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="hidden flex flex-col h-screen">
+    <header class="bg-blue-600 text-white px-8 py-4 flex items-center justify-between">
+      <nav id="main-nav" class="flex gap-8 text-sm font-medium"></nav>
+
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2 bg-white/10 px-4 py-1 rounded-3xl text-sm">
+          <span class="text-xs font-medium">MARKET</span>
+          <select id="market-select" onchange="changeMarket()" class="bg-transparent focus:outline-none font-semibold"></select>
+        </div>
+        <div id="user-name" class="font-medium"></div>
+        <div id="user-role" class="text-xs bg-blue-700 px-3 py-1 rounded-full"></div>
+        <button onclick="logout()" class="hover:text-red-300"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </header>
+    <div class="flex-1 overflow-auto p-8 bg-white text-zinc-900" id="main-content"></div>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let currentMarket = localStorage.getItem('currentMarket') || 'Austin';
+    let messageCount = 3; // Demo notification count – we can make it dynamic later
+
+    const teamMembers = [
+      {id:1, name:"Alex Rivera", role:"Admin"},
+      {id:2, name:"Sarah Chen", role:"Manager"},
+      {id:3, name:"Mike Torres", role:"Agent"},
+      {id:4, name:"Maria Lopez", role:"Invoice Administrator"}
+    ];
+
+    function quickLogin(role) {
+      currentUser = role === "Admin" ? teamMembers[0] : 
+                    role === "Manager" ? teamMembers[1] : 
+                    role === "InvoiceAdmin" ? teamMembers[3] : teamMembers[2];
+      
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('user-name').textContent = currentUser.name;
+      document.getElementById('user-role').textContent = currentUser.role;
+
+      buildNavigation();
+      populateMarketSelector();
+      navigate('dashboard');
+    }
+
+    function buildNavigation() {
+      const nav = document.getElementById('main-nav');
+      let navHTML = '';
+
+      if (currentUser.role === 'Agent') {
+        // Agent-specific order
+        navHTML = `
+          <button onclick="navigate('dashboard')" class="nav-btn hover:underline">Home</button>
+          <button onclick="navigate('search')" class="nav-btn hover:underline font-semibold">Search</button>
+          <button onclick="navigate('clients')" class="nav-btn hover:underline">Clients</button>
+          <button onclick="navigate('sendlist')" class="nav-btn hover:underline">Sent Lists</button>
+          <button onclick="navigate('followups')" class="nav-btn hover:underline">Follow-Ups</button>
+          <button onclick="navigate('messages')" id="messages-btn" class="nav-btn hover:underline relative">Messages
+            <span id="message-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">${messageCount}</span>
+          </button>`;
+      } else {
+        // Admin / Manager / Invoice Admin – original order
+        navHTML = `
+          <button onclick="navigate('dashboard')" class="nav-btn hover:underline">Home</button>
+          <button onclick="navigate('clients')" class="nav-btn hover:underline">Clients</button>
+          <button onclick="navigate('search')" class="nav-btn hover:underline font-semibold">Search</button>
+          <button onclick="navigate('commissions')" class="nav-btn hover:underline">Commissions</button>
+          <button onclick="navigate('sendlist')" class="nav-btn hover:underline">Sent Lists</button>
+          <button onclick="navigate('followups')" class="nav-btn hover:underline">Follow-Ups</button>
+          <button onclick="navigate('messages')" id="messages-btn" class="nav-btn hover:underline relative">Messages
+            <span id="message-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">${messageCount}</span>
+          </button>
+          <button onclick="navigate('emailupdates')" id="emailupdates-btn" class="nav-btn hover:underline hidden">AI Email Updates</button>
+          <button onclick="navigate('team')" id="team-btn" class="nav-btn hover:underline hidden">Team</button>`;
+      }
+
+      nav.innerHTML = navHTML;
+
+      // Show/hide role-specific buttons
+      if (currentUser.role !== 'Agent') {
+        const isAgent = false;
+        document.getElementById('emailupdates-btn').classList.toggle('hidden', isAgent);
+        document.getElementById('team-btn').classList.toggle('hidden', isAgent);
+      }
+    }
+
+    function populateMarketSelector() {
+      const select = document.getElementById('market-select');
+      select.innerHTML = `<option value="Austin" selected>Austin</option>`;
+    }
+
+    function changeMarket() {
+      currentMarket = document.getElementById('market-select').value;
+      localStorage.setItem('currentMarket', currentMarket);
+      alert(`✅ Switched to ${currentMarket} Market`);
+      navigate('search');
+    }
+
+    function logout() { location.reload(); }
+
+    function navigate(page) {
+      let html = '';
+      if (page === 'search') {
+        html = `
+          <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+              <h1 class="text-4xl font-semibold">Search — ${currentMarket} Market</h1>
+              ${(currentUser.role === 'Admin' || currentUser.role === 'Manager') ? `
+                <div class="flex gap-3">
+                  <button onclick="showAddPropertyModal()" class="bg-emerald-600 text-white px-6 py-3 rounded-3xl flex items-center gap-2"><i class="fas fa-plus"></i> Add New Property</button>
+                  <button onclick="showWebsiteModal()" class="bg-blue-600 text-white px-6 py-3 rounded-3xl flex items-center gap-2"><i class="fas fa-globe"></i> Add from Website</button>
+                  <button onclick="showTeachAIModal()" class="bg-violet-600 text-white px-6 py-3 rounded-3xl flex items-center gap-2"><i class="fas fa-brain"></i> Teach the AI</button>
+                  <button onclick="showManageAIModal()" class="bg-amber-600 text-white px-6 py-3 rounded-3xl flex items-center gap-2"><i class="fas fa-cog"></i> Manage AI Knowledge</button>
+                </div>` : ''}
+            </div>
+
+            <!-- AI Scout -->
+            <div class="mb-8 bg-white border rounded-3xl p-2 flex items-center">
+              <input id="ai-scout-input" class="flex-1 bg-transparent px-6 py-5 text-lg focus:outline-none" placeholder="Ask anything... e.g. 2 bedroom under $1000 in 78741 with washer dryer available mid to late July" onkeypress="if(event.key==='Enter') runAIScout()">
+              <button onclick="runAIScout()" class="bg-emerald-600 text-white px-8 py-5 rounded-3xl font-medium">Search with AI</button>
+            </div>
+
+            <!-- Advanced Manual Search -->
+            <div class="bg-white border rounded-3xl p-8">
+              <h2 class="text-2xl font-semibold mb-6">Advanced Manual Search</h2>
+              <div class="mb-8">
+                <h3 class="font-medium mb-4">This search is for?</h3>
+                <div class="flex gap-8">
+                  <label class="flex items-center gap-3"><input type="radio" name="client-type" checked> Existing Client</label>
+                  <label class="flex items-center gap-3"><input type="radio" name="client-type"> New Client</label>
+                  <label class="flex items-center gap-3"><input type="radio" name="client-type"> Just Looking</label>
+                </div>
+              </div>
+              <button onclick="runAdvancedSearch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 rounded-3xl text-xl font-medium">Run Advanced Search</button>
+            </div>
+
+            <div id="search-results" class="grid grid-cols-3 gap-6 mt-12"></div>
+          </div>`;
+      } else if (page === 'team') {
+        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">Team Management</h1><p class="text-zinc-500">Team management coming soon...</p></div>`;
+      } else {
+        html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">${page}</h1><p class="text-3xl text-zinc-500">Content filtered to ${currentMarket}</p></div>`;
+      }
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    function runAIScout() {
+      const query = (document.getElementById('ai-scout-input').value || "").toLowerCase();
+      alert("✅ AI Scout received: " + query);
+    }
+
+    function runAdvancedSearch() {
+      alert("✅ Advanced Manual Search executed");
+    }
+
+    function showAddPropertyModal() { alert("Add New Property modal"); }
+    function showWebsiteModal() { alert("Add from Website modal"); }
+    function showTeachAIModal() { alert("Teach the AI modal"); }
+    function showManageAIModal() { alert("Manage AI Knowledge modal"); }
+  </script>
+</body>
+</html>
