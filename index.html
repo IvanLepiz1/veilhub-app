@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .card { transition: all 0.2s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
   </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 min-h-screen overflow-hidden">
@@ -119,6 +121,8 @@
             <!-- Advanced Manual Search -->
             <div class="bg-white border rounded-3xl p-8">
               <h2 class="text-2xl font-semibold mb-6">Advanced Manual Search</h2>
+              
+              <!-- Client Selection -->
               <div class="mb-8">
                 <h3 class="font-medium mb-4">This search is for?</h3>
                 <div class="flex gap-8">
@@ -127,7 +131,28 @@
                   <label class="flex items-center gap-3"><input type="radio" name="client-type"> Just Looking</label>
                 </div>
               </div>
-              <button onclick="runAdvancedSearch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 rounded-3xl text-xl font-medium">Run Advanced Search</button>
+
+              <!-- Clean filter grid -->
+              <div class="grid grid-cols-4 gap-6">
+                <div>
+                  <label class="block text-sm mb-2">Price Range</label>
+                  <div class="flex gap-3"><input type="text" placeholder="$ From" class="flex-1 border rounded-3xl px-5 py-4 text-center"> <input type="text" placeholder="$ To" class="flex-1 border rounded-3xl px-5 py-4 text-center"></div>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2">Bedrooms</label>
+                  <div class="flex gap-3"><input type="text" placeholder="From" class="flex-1 border rounded-3xl px-5 py-4 text-center"> <input type="text" placeholder="To" class="flex-1 border rounded-3xl px-5 py-4 text-center"></div>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2">Baths</label>
+                  <div class="flex gap-3"><input type="text" placeholder="From" class="flex-1 border rounded-3xl px-5 py-4 text-center"> <input type="text" placeholder="To" class="flex-1 border rounded-3xl px-5 py-4 text-center"></div>
+                </div>
+                <div>
+                  <label class="block text-sm mb-2">Available by</label>
+                  <input type="date" class="w-full border rounded-3xl px-5 py-4">
+                </div>
+              </div>
+
+              <button onclick="runAdvancedSearch()" class="mt-10 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 rounded-3xl text-xl font-medium">Run Advanced Search</button>
             </div>
 
             <div id="search-results" class="grid grid-cols-3 gap-6 mt-12"></div>
@@ -146,7 +171,7 @@
     }
 
     function runAdvancedSearch() {
-      alert("✅ Advanced Manual Search executed");
+      alert("✅ Advanced Manual Search executed — results would appear below.");
     }
 
     function showAddPropertyModal() { alert("Add New Property modal"); }
