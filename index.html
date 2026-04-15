@@ -43,7 +43,7 @@
         <button onclick="navigate('followups')" class="nav-btn hover:underline">Follow-Ups</button>
         <button onclick="navigate('messages')" class="nav-btn hover:underline">Messages</button>
         <button onclick="navigate('emailupdates')" id="emailupdates-btn" class="nav-btn hover:underline hidden">AI Email Updates</button>
-        <button onclick="navigate('team')" id="team-btn" class="nav-btn hover:underline">Team</button>
+        <button onclick="navigate('team')" id="team-btn" class="nav-btn hover:underline hidden">Team</button>
       </nav>
 
       <div class="flex items-center gap-6">
@@ -80,8 +80,10 @@
       document.getElementById('user-name').textContent = currentUser.name;
       document.getElementById('user-role').textContent = currentUser.role;
 
-      // Hide AI Email Updates for Agents only
-      document.getElementById('emailupdates-btn').classList.toggle('hidden', currentUser.role === 'Agent');
+      // Hide AI Email Updates and Team button for Agents only
+      const isAgent = currentUser.role === 'Agent';
+      document.getElementById('emailupdates-btn').classList.toggle('hidden', isAgent);
+      document.getElementById('team-btn').classList.toggle('hidden', isAgent);
 
       populateMarketSelector();
       navigate('dashboard');
