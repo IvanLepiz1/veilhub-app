@@ -118,43 +118,46 @@
 
             <!-- Advanced Manual Search -->
             <div class="bg-white border rounded-3xl p-8">
-              <h2 class="text-2xl font-semibold mb-6">Advanced Manual Search</h2>
-              
+              <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold">Advanced Manual Search</h2>
+                <button onclick="toggleAdvancedSearch()" class="text-blue-600 font-medium">Hide Advanced Filters</button>
+              </div>
+
               <!-- Client Selection -->
-              <div class="mb-8">
-                <h3 class="font-medium mb-3">This search is for?</h3>
-                <div class="flex gap-6">
-                  <label class="flex items-center gap-2"><input type="radio" name="client-type" checked> Existing Client in my Database</label>
-                  <label class="flex items-center gap-2"><input type="radio" name="client-type"> New Client</label>
-                  <label class="flex items-center gap-2"><input type="radio" name="client-type"> Just Looking</label>
+              <div class="mb-8 bg-zinc-50 border rounded-3xl p-6">
+                <h3 class="font-medium mb-4">This search is for?</h3>
+                <div class="flex gap-8">
+                  <label class="flex items-center gap-3"><input type="radio" name="client-type" checked> Existing Client</label>
+                  <label class="flex items-center gap-3"><input type="radio" name="client-type"> New Client</label>
+                  <label class="flex items-center gap-3"><input type="radio" name="client-type"> Just Looking</label>
                 </div>
               </div>
 
-              <!-- Filters -->
-              <div class="grid grid-cols-4 gap-8 text-sm">
+              <!-- Clean filter grid -->
+              <div class="grid grid-cols-4 gap-6">
                 <div>
-                  <label class="block mb-1">Price Range</label>
-                  <div class="flex gap-2"><input type="text" placeholder="From" class="flex-1 border rounded-2xl px-4 py-3"> <input type="text" placeholder="To" class="flex-1 border rounded-2xl px-4 py-3"></div>
+                  <label class="block text-sm mb-2">Price Range</label>
+                  <div class="flex gap-3"><input type="text" placeholder="$ From" class="flex-1 border rounded-3xl px-5 py-4 text-center"> <input type="text" placeholder="$ To" class="flex-1 border rounded-3xl px-5 py-4 text-center"></div>
                 </div>
                 <div>
-                  <label class="block mb-1">Bedrooms</label>
-                  <div class="flex gap-2"><input type="text" placeholder="From" class="flex-1 border rounded-2xl px-4 py-3"> <input type="text" placeholder="To" class="flex-1 border rounded-2xl px-4 py-3"></div>
+                  <label class="block text-sm mb-2">Bedrooms</label>
+                  <div class="flex gap-3"><input type="text" placeholder="From" class="flex-1 border rounded-3xl px-5 py-4 text-center"> <input type="text" placeholder="To" class="flex-1 border rounded-3xl px-5 py-4 text-center"></div>
                 </div>
                 <div>
-                  <label class="block mb-1">Baths</label>
-                  <div class="flex gap-2"><input type="text" placeholder="From" class="flex-1 border rounded-2xl px-4 py-3"> <input type="text" placeholder="To" class="flex-1 border rounded-2xl px-4 py-3"></div>
+                  <label class="block text-sm mb-2">Baths</label>
+                  <div class="flex gap-3"><input type="text" placeholder="From" class="flex-1 border rounded-3xl px-5 py-4 text-center"> <input type="text" placeholder="To" class="flex-1 border rounded-3xl px-5 py-4 text-center"></div>
                 </div>
                 <div>
-                  <label class="block mb-1">Available by</label>
-                  <input type="date" class="w-full border rounded-2xl px-4 py-3">
+                  <label class="block text-sm mb-2">Available by</label>
+                  <input type="date" class="w-full border rounded-3xl px-5 py-4">
                 </div>
               </div>
 
-              <!-- Amenities and other checkboxes would go here in full version -->
-              <button onclick="runAdvancedSearch()" class="mt-8 w-full bg-emerald-600 text-white py-5 rounded-3xl font-medium">Run Advanced Search</button>
+              <!-- Amenities and other sections would be here in full version - kept clean for now -->
+              <button onclick="runAdvancedSearch()" class="mt-10 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 rounded-3xl text-xl font-medium">Run Advanced Search</button>
             </div>
 
-            <div id="search-results" class="grid grid-cols-3 gap-6 mt-8"></div>
+            <div id="search-results" class="grid grid-cols-3 gap-6 mt-12"></div>
           </div>`;
       } else if (page === 'team') {
         html = `<div class="max-w-6xl mx-auto"><h1 class="text-4xl font-semibold mb-8">Team Management</h1><p class="text-zinc-500">Team management coming soon...</p></div>`;
@@ -166,11 +169,15 @@
 
     function runAIScout() {
       const query = (document.getElementById('ai-scout-input').value || "").toLowerCase();
-      alert("✅ AI Scout received: " + query + "\n\nResults would appear here.");
+      alert("✅ AI Scout received: " + query);
     }
 
     function runAdvancedSearch() {
-      alert("✅ Advanced Manual Search run — results would appear here.");
+      alert("✅ Advanced Manual Search executed — results would appear below.");
+    }
+
+    function toggleAdvancedSearch() {
+      // Toggle logic can be expanded later
     }
 
     function showAddPropertyModal() { alert("Add New Property modal"); }
