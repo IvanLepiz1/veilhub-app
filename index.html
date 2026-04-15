@@ -132,8 +132,8 @@
           <button onclick="navigate('messages')" id="messages-btn" class="nav-btn hover:underline relative">Messages
             <span id="message-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center"></span>
           </button>
-          <button onclick="navigate('emailupdates')" id="emailupdates-btn" class="nav-btn hover:underline hidden">AI Email Updates</button>
-          <button onclick="navigate('team')" id="team-btn" class="nav-btn hover:underline hidden">Team</button>`;
+          <button onclick="navigate('emailupdates')" id="emailupdates-btn" class="nav-btn hover:underline">AI Email Updates</button>
+          <button onclick="navigate('team')" id="team-btn" class="nav-btn hover:underline">Team</button>`;
       }
 
       nav.innerHTML = navHTML;
@@ -176,11 +176,10 @@
               <button onclick="runAIScout()" class="bg-emerald-600 text-white px-8 py-5 rounded-3xl font-medium">Search with AI</button>
             </div>
 
-            <!-- CLEANER ADVANCED MANUAL SEARCH -->
+            <!-- CLEAN ADVANCED MANUAL SEARCH -->
             <div class="bg-white border rounded-3xl p-10">
               <h2 class="text-3xl font-semibold mb-8">Advanced Manual Search</h2>
               
-              <!-- Client Type Segmented -->
               <div class="mb-10">
                 <p class="text-sm font-medium text-zinc-500 mb-3">This search is for?</p>
                 <div class="segmented">
@@ -190,7 +189,6 @@
                 </div>
               </div>
 
-              <!-- Filters Grid -->
               <div class="grid grid-cols-2 gap-8">
                 <div>
                   <label class="block text-sm font-medium text-zinc-500 mb-2">Price Range</label>
@@ -222,7 +220,6 @@
                 </div>
               </div>
 
-              <!-- Amenities -->
               <div class="mt-10">
                 <label class="block text-sm font-medium text-zinc-500 mb-3">Key Amenities</label>
                 <div class="grid grid-cols-4 gap-3">
